@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordered Products</title>
+</head>
+<body>
+    <h1>Ordered Products for {{ client.name }}</h1>
+
+    <h2>Ordered in the Last 7 Days</h2>
+    <ul>
+        {% for product, count, total_amount in products_week %}
+            <li>{{ product.name }} ({{ count }} items, Total: {{ total_amount }})</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Ordered in the Last 30 Days</h2>
+    <ul>
+        {% for product, count, total_amount in products_month %}
+            <li>{{ product.name }} ({{ count }} items, Total: {{ total_amount }})</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Ordered in the Last 365 Days</h2>
+    <ul>
+        {% for product, count, total_amount in products_year %}
+            <li>{{ product.name }} ({{ count }} items, Total: {{ total_amount }})</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
