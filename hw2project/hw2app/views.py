@@ -4,6 +4,9 @@ from hw2app.models import Client, Product, Order
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum
+from .forms import ImageForm
+from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
 
 
 class ProductsClientView(View):
@@ -67,3 +70,31 @@ class ProductsClientView(View):
             'products_month': product_list_month,
             'products_year': product_list_year,
         })
+
+
+def upload_image(request, product_id):
+    try:
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        # Обработка случая, когда продукт с указанным ID не существует
+        HttpResponse('No product')
+
+    if request.method == 'POST':
+        form = ImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.cleaned_data['image']
+            fs = FileSystemStorage()
+            # Сохраняем изображение в папку /media/product_photos/id/
+            filename = fs.save(f'product_photos/{product_id}/{image.name}',
+                               image)
+            # Путь к сохраненному изображению
+            saved_image_path = fs.url(filename)
+            # Здесь можно сохранить путь к изображению в модель продукта,
+            # если это необходимо
+            return render(request, 'hw2app/upload_image.html',
+                          {'saved_image_path': saved_image_path,
+                           'product': product})
+    else:
+        form = ImageForm()
+    return render(request, 'hw2app/upload_image.html',
+                  {'form': form, 'product': product})
